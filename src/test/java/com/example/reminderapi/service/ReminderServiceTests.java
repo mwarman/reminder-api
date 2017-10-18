@@ -42,7 +42,7 @@ public class ReminderServiceTests {
         Date dueAt = new Date();
         Reminder input = new Reminder(text, dueAt);
 
-        Reminder result = reminderService.create(input);
+        Reminder result = this.reminderService.create(input);
 
         assertThat(result).isNotNull();
         assertThat(result.getText()).isEqualTo(text);
@@ -51,17 +51,34 @@ public class ReminderServiceTests {
         assertThat(result.isComplete()).isFalse();
         assertThat(result.getCompletedAt()).isNull();
 
-        assertThat(reminderRepository.count()).isEqualTo(3);
+        assertThat(this.reminderRepository.count()).isEqualTo(3);
     }
 
     @Transactional
     @Test
     public void findAllReminders() {
-        List<Reminder> reminders = reminderService.findAll();
+        List<Reminder> reminders = this.reminderService.findAll();
 
         assertThat(reminders).isNotNull().isNotEmpty();
         assertThat(reminders.size()).isEqualTo(2);
-        assertThat(reminders).contains(reminder);
+        assertThat(reminders).contains(this.reminder);
+    }
+
+    @Transactional
+    @Test
+    public void findReminderById() {
+        Reminder result = this.reminderService.findById(this.reminder.getId());
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(this.reminder.getId());
+    }
+
+    @Transactional
+    @Test
+    public void findReminderByIdNotFound() {
+        Reminder result = this.reminderService.findById(Long.MAX_VALUE);
+
+        assertThat(result).isNull();
     }
 
 }

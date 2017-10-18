@@ -30,4 +30,9 @@ public class ReminderServiceBean implements ReminderService {
         return reminderRepository.findAll();
     }
 
+    @Override
+    public Reminder findById(Long id) {
+        return reminderRepository.findOne(id);
+    }
+
 }

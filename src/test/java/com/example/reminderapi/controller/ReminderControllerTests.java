@@ -65,7 +65,7 @@ public class ReminderControllerTests {
     }
 
     @Test
-    public void fetchAllReminders() throws Exception {
+    public void getAllReminders() throws Exception {
         List<Reminder> reminderList = new ArrayList<Reminder>();
         reminderList.add(new Reminder("Test the Controller", new Date()));
 
@@ -81,6 +81,42 @@ public class ReminderControllerTests {
 
         assertThat(status).isEqualTo(200);
         assertThat(content).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void getReminder() throws Exception {
+        Long reminderId = new Long(1);
+        Reminder reminder = new Reminder("Test the Controller", new Date());
+        reminder.setId(reminderId);
+
+        when(this.reminderService.findById(reminderId)).thenReturn(reminder);
+        MvcResult result = this.mvc.perform(get("/api/reminders/" + reminderId)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).findById(reminderId);
+
+        assertThat(status).isEqualTo(200);
+        assertThat(content).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void getReminderNotFound() throws Exception {
+        Long reminderId = Long.MAX_VALUE;
+
+        when(this.reminderService.findById(reminderId)).thenReturn(null);
+        MvcResult result = this.mvc.perform(get("/api/reminders/" + reminderId)
+                .accept(MediaType.APPLICATION_JSON)).andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).findById(reminderId);
+
+        assertThat(status).isEqualTo(404);
+        assertThat(content).isEmpty();
     }
 
 }

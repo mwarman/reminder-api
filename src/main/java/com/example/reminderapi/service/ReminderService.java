@@ -10,7 +10,7 @@ public interface ReminderService {
 
     List<Reminder> findAll();
 
-    // find reminder by id
+    Reminder findById(Long id);
 
     // update a reminder
 

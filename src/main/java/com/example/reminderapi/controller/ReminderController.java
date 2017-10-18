@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,7 +48,19 @@ public class ReminderController {
         return new ResponseEntity<List<Reminder>>(reminders, HttpStatus.OK);
     }
 
-    // Find Reminder by Id
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public ResponseEntity<Reminder> getReminder(@PathVariable("id") Long id) {
+
+        Reminder reminder = reminderService.findById(id);
+        if (reminder == null) {
+            return new ResponseEntity<Reminder>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Reminder>(reminder, HttpStatus.OK);
+    }
 
     // Update Reminder
 

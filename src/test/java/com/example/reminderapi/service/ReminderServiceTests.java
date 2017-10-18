@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,14 @@ public class ReminderServiceTests {
 
     @Autowired
     private ReminderService reminderService;
+
+    @Before
+    public void beforeEach() {
+        Reminder reminderOne = reminderRepository
+                .save(new Reminder("Test One", new Date()));
+        Reminder reminderTwo = reminderRepository
+                .save(new Reminder("Test One", new Date()));
+    }
 
     @Transactional
     @Test

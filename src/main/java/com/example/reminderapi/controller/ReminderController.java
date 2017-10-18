@@ -1,5 +1,7 @@
 package com.example.reminderapi.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,7 @@ import com.example.reminderapi.service.ReminderService;
 
 @RestController
 @RequestMapping(
-        value = "/api/reminders",
-        consumes = "application/json",
-        produces = "application/json")
+        value = "/api/reminders")
 public class ReminderController {
 
     private ReminderService reminderService;
@@ -25,20 +25,27 @@ public class ReminderController {
         this.reminderService = reminderService;
     }
 
-    // Create Reminder
     @RequestMapping(
-            method = RequestMethod.POST)
+            method = RequestMethod.POST,
+            consumes = "application/json",
+            produces = "application/json")
     public ResponseEntity<Reminder> createReminder(
             @RequestBody Reminder reminder) {
 
-        // Save Reminder in DB
         Reminder savedReminder = reminderService.create(reminder);
 
-        // Return the saved Reminder
         return new ResponseEntity<Reminder>(savedReminder, HttpStatus.OK);
     }
 
-    // Find All Reminders
+    @RequestMapping(
+            method = RequestMethod.GET,
+            produces = "application/json")
+    public ResponseEntity<List<Reminder>> getAllReminders() {
+
+        List<Reminder> reminders = reminderService.findAll();
+
+        return new ResponseEntity<List<Reminder>>(reminders, HttpStatus.OK);
+    }
 
     // Find Reminder by Id
 

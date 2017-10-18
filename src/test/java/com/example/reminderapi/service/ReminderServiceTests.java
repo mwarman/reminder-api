@@ -3,6 +3,7 @@ package com.example.reminderapi.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,12 +26,13 @@ public class ReminderServiceTests {
     @Autowired
     private ReminderService reminderService;
 
+    private Reminder reminder;
+
     @Before
     public void beforeEach() {
-        Reminder reminderOne = reminderRepository
+        reminder = reminderRepository
                 .save(new Reminder("Test One", new Date()));
-        Reminder reminderTwo = reminderRepository
-                .save(new Reminder("Test One", new Date()));
+        reminderRepository.save(new Reminder("Test One", new Date()));
     }
 
     @Transactional
@@ -50,6 +52,16 @@ public class ReminderServiceTests {
         assertThat(result.getCompletedAt()).isNull();
 
         assertThat(reminderRepository.count()).isEqualTo(3);
+    }
+
+    @Transactional
+    @Test
+    public void findAllReminders() {
+        List<Reminder> reminders = reminderService.findAll();
+
+        assertThat(reminders).isNotNull().isNotEmpty();
+        assertThat(reminders.size()).isEqualTo(2);
+        assertThat(reminders).contains(reminder);
     }
 
 }

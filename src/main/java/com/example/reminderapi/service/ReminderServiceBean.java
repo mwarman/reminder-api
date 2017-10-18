@@ -1,5 +1,7 @@
 package com.example.reminderapi.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,11 @@ public class ReminderServiceBean implements ReminderService {
     @Override
     public Reminder create(Reminder reminder) {
         return reminderRepository.save(reminder);
+    }
+
+    @Override
+    public List<Reminder> findAll() {
+        return reminderRepository.findAll();
     }
 
 }

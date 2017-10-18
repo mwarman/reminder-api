@@ -5,9 +5,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +33,9 @@ public class ReminderControllerTests {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     @MockBean
     private ReminderService reminderService;
 
@@ -43,18 +49,35 @@ public class ReminderControllerTests {
         when(reminderService.create(any(Reminder.class)))
                 .thenReturn(savedReminder);
         MvcResult result = this.mvc
-                .perform(
-                        post("/api/reminders")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON)
-                                .content(new ObjectMapper()
-                                        .writeValueAsString(reminder)))
+                .perform(post("/api/reminders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(reminder)))
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
         int status = result.getResponse().getStatus();
 
         verify(reminderService, times(1)).create(any(Reminder.class));
+
+        assertThat(status).isEqualTo(200);
+        assertThat(content).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void fetchAllReminders() throws Exception {
+        List<Reminder> reminderList = new ArrayList<Reminder>();
+        reminderList.add(new Reminder("Test the Controller", new Date()));
+
+        when(reminderService.findAll()).thenReturn(reminderList);
+        MvcResult result = this.mvc.perform(
+                get("/api/reminders").accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).findAll();
 
         assertThat(status).isEqualTo(200);
         assertThat(content).isNotNull().isNotEmpty();

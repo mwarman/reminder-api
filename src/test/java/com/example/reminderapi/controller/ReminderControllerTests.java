@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -41,6 +42,7 @@ public class ReminderControllerTests {
     @MockBean
     private ReminderService reminderService;
 
+    @WithMockUser
     @Test
     public void createReminder() throws Exception {
         Reminder reminder = new Reminder("Test the Controller", new Date());
@@ -66,6 +68,7 @@ public class ReminderControllerTests {
         assertThat(content).isNotNull().isNotEmpty();
     }
 
+    @WithMockUser
     @Test
     public void getAllReminders() throws Exception {
         List<Reminder> reminderList = new ArrayList<Reminder>();
@@ -85,6 +88,7 @@ public class ReminderControllerTests {
         assertThat(content).isNotNull().isNotEmpty();
     }
 
+    @WithMockUser
     @Test
     public void getReminder() throws Exception {
         Long reminderId = new Long(1);
@@ -104,6 +108,7 @@ public class ReminderControllerTests {
         assertThat(content).isNotNull().isNotEmpty();
     }
 
+    @WithMockUser
     @Test
     public void getReminderNotFound() throws Exception {
         Long reminderId = Long.MAX_VALUE;
@@ -121,6 +126,7 @@ public class ReminderControllerTests {
         assertThat(content).isEmpty();
     }
 
+    @WithMockUser
     @Test
     public void updateReminder() throws Exception {
         Long reminderId = new Long(1);
@@ -145,6 +151,7 @@ public class ReminderControllerTests {
         assertThat(content).isNotNull().isNotEmpty();
     }
 
+    @WithMockUser
     @Test
     public void updateReminderNotFound() throws Exception {
         Long reminderId = Long.MAX_VALUE;
@@ -168,6 +175,7 @@ public class ReminderControllerTests {
         assertThat(content).isEmpty();
     }
 
+    @WithMockUser
     @Test
     public void deleteReminder() throws Exception {
         Long reminderId = new Long(1);
@@ -189,6 +197,7 @@ public class ReminderControllerTests {
         assertThat(content).isNotEmpty();
     }
 
+    @WithMockUser
     @Test
     public void deleteReminderNotFound() throws Exception {
         Long reminderId = Long.MAX_VALUE;

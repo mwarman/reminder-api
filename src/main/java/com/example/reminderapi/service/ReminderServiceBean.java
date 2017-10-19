@@ -65,4 +65,18 @@ public class ReminderServiceBean implements ReminderService {
         return reminderRepository.save(reminderToUpdate);
     }
 
+    @Transactional
+    @Override
+    public Reminder delete(Long id) {
+        Reminder reminderToDelete = findById(id);
+
+        if (reminderToDelete == null) {
+            return null;
+        }
+
+        reminderRepository.delete(id);
+
+        return reminderToDelete;
+    }
+
 }

@@ -5,6 +5,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -162,6 +163,46 @@ public class ReminderControllerTests {
         int status = result.getResponse().getStatus();
 
         verify(reminderService, times(1)).update(any(Reminder.class));
+
+        assertThat(status).isEqualTo(404);
+        assertThat(content).isEmpty();
+    }
+
+    @Test
+    public void deleteReminder() throws Exception {
+        Long reminderId = new Long(1);
+        Reminder reminder = new Reminder("Test the Controller", new Date());
+        reminder.setId(reminderId);
+
+        when(this.reminderService.delete(reminderId)).thenReturn(reminder);
+        MvcResult result = this.mvc
+                .perform(delete("/api/reminders/" + reminderId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).delete(reminderId);
+
+        assertThat(status).isEqualTo(200);
+        assertThat(content).isNotEmpty();
+    }
+
+    @Test
+    public void deleteReminderNotFound() throws Exception {
+        Long reminderId = Long.MAX_VALUE;
+
+        when(this.reminderService.delete(reminderId)).thenReturn(null);
+        MvcResult result = this.mvc
+                .perform(delete("/api/reminders/" + reminderId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).delete(reminderId);
 
         assertThat(status).isEqualTo(404);
         assertThat(content).isEmpty();

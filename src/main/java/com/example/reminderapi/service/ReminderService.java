@@ -14,5 +14,5 @@ public interface ReminderService {
 
     Reminder update(Reminder reminder);
 
-    // delete a reminder
+    Reminder delete(Long id);
 }

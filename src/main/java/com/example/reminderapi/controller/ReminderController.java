@@ -80,6 +80,19 @@ public class ReminderController {
         return new ResponseEntity<Reminder>(updatedReminder, HttpStatus.OK);
     }
 
-    // Delete Reminder
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.DELETE,
+            produces = "application/json")
+    public ResponseEntity<Reminder> deleteReminder(
+            @PathVariable("id") Long id) {
+
+        Reminder deletedReminder = reminderService.delete(id);
+        if (deletedReminder == null) {
+            return new ResponseEntity<Reminder>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Reminder>(deletedReminder, HttpStatus.OK);
+    }
 
 }

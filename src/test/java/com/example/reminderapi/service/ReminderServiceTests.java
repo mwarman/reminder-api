@@ -149,4 +149,27 @@ public class ReminderServiceTests {
         assertThat(updatedReminder).isNull();
     }
 
+    @Transactional
+    @Test
+    public void deleteReminder() {
+        Long deletedId = this.reminderOne.getId();
+        Reminder deletedReminder = this.reminderService
+                .delete(this.reminderOne.getId());
+
+        assertThat(deletedReminder).isNotNull();
+        assertThat(deletedReminder.getId()).isEqualTo(deletedId);
+
+        assertThat(this.reminderRepository.count()).isEqualTo(1);
+    }
+
+    @Transactional
+    @Test
+    public void deleteReminderNotFound() {
+        Reminder deletedReminder = this.reminderService.delete(Long.MAX_VALUE);
+
+        assertThat(deletedReminder).isNull();
+
+        assertThat(this.reminderRepository.count()).isEqualTo(2);
+    }
+
 }

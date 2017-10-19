@@ -35,7 +35,7 @@ public class ReminderController {
 
         Reminder savedReminder = reminderService.create(reminder);
 
-        return new ResponseEntity<Reminder>(savedReminder, HttpStatus.OK);
+        return new ResponseEntity<Reminder>(savedReminder, HttpStatus.CREATED);
     }
 
     @RequestMapping(
@@ -62,7 +62,23 @@ public class ReminderController {
         return new ResponseEntity<Reminder>(reminder, HttpStatus.OK);
     }
 
-    // Update Reminder
+    @RequestMapping(
+            value = "/{id}",
+            method = { RequestMethod.PUT, RequestMethod.PATCH },
+            consumes = "application/json",
+            produces = "application/json")
+    public ResponseEntity<Reminder> updateReminder(@PathVariable("id") Long id,
+            @RequestBody Reminder reminder) {
+
+        reminder.setId(id);
+
+        Reminder updatedReminder = reminderService.update(reminder);
+        if (updatedReminder == null) {
+            return new ResponseEntity<Reminder>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Reminder>(updatedReminder, HttpStatus.OK);
+    }
 
     // Delete Reminder
 

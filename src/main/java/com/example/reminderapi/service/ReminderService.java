@@ -12,7 +12,7 @@ public interface ReminderService {
 
     Reminder findById(Long id);
 
-    // update a reminder
+    Reminder update(Reminder reminder);
 
     // delete a reminder
 }

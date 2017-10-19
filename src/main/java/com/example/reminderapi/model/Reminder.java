@@ -24,7 +24,7 @@ public class Reminder {
     @NotNull
     private Date dueAt;
 
-    private boolean complete;
+    private boolean complete = false;
 
     private Date completedAt;
 

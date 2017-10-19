@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.reminderapi.model.Reminder;
@@ -26,13 +27,20 @@ public class ReminderServiceTests {
     @Autowired
     private ReminderService reminderService;
 
-    private Reminder reminder;
+    private Reminder reminderOne;
+    private Reminder reminderTwo;
 
+    @Transactional(
+            propagation = Propagation.REQUIRES_NEW)
     @Before
     public void beforeEach() {
-        reminder = reminderRepository
+        reminderOne = reminderRepository
                 .save(new Reminder("Test One", new Date()));
-        reminderRepository.save(new Reminder("Test One", new Date()));
+
+        reminderTwo = new Reminder("Test Two", new Date());
+        reminderTwo.setComplete(true);
+        reminderTwo.setCompletedAt(new Date());
+        reminderRepository.save(reminderTwo);
     }
 
     @Transactional
@@ -61,16 +69,17 @@ public class ReminderServiceTests {
 
         assertThat(reminders).isNotNull().isNotEmpty();
         assertThat(reminders.size()).isEqualTo(2);
-        assertThat(reminders).contains(this.reminder);
+        assertThat(reminders).contains(this.reminderOne);
     }
 
     @Transactional
     @Test
     public void findReminderById() {
-        Reminder result = this.reminderService.findById(this.reminder.getId());
+        Reminder result = this.reminderService
+                .findById(this.reminderOne.getId());
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(this.reminder.getId());
+        assertThat(result.getId()).isEqualTo(this.reminderOne.getId());
     }
 
     @Transactional
@@ -79,6 +88,65 @@ public class ReminderServiceTests {
         Reminder result = this.reminderService.findById(Long.MAX_VALUE);
 
         assertThat(result).isNull();
+    }
+
+    @Transactional
+    @Test
+    public void updateReminder() {
+        Reminder reminderToUpdate = new Reminder();
+        reminderToUpdate.setId(this.reminderOne.getId());
+        String text = "Update a Reminder";
+        reminderToUpdate.setText(text);
+
+        Reminder updatedReminder = this.reminderService
+                .update(reminderToUpdate);
+
+        assertThat(updatedReminder).isNotNull();
+        assertThat(updatedReminder.getText()).isEqualTo(text);
+    }
+
+    @Transactional
+    @Test
+    public void updateReminderComplete() {
+        Reminder reminderToUpdate = new Reminder();
+        reminderToUpdate.setId(this.reminderOne.getId());
+        reminderToUpdate.setComplete(true);
+
+        Reminder updatedReminder = this.reminderService
+                .update(reminderToUpdate);
+
+        assertThat(updatedReminder).isNotNull();
+        assertThat(updatedReminder.isComplete()).isTrue();
+        assertThat(updatedReminder.getCompletedAt()).isToday();
+    }
+
+    @Transactional
+    @Test
+    public void updateReminderIncomplete() {
+        Reminder reminderToUpdate = new Reminder();
+        reminderToUpdate.setId(this.reminderTwo.getId());
+        reminderToUpdate.setComplete(false);
+
+        Reminder updatedReminder = this.reminderService
+                .update(reminderToUpdate);
+
+        assertThat(updatedReminder).isNotNull();
+        assertThat(updatedReminder.isComplete()).isFalse();
+        assertThat(updatedReminder.getCompletedAt()).isNull();
+    }
+
+    @Transactional
+    @Test
+    public void updateReminderNotFound() {
+        Reminder reminderToUpdate = new Reminder();
+        reminderToUpdate.setId(Long.MAX_VALUE);
+        String text = "Update a Reminder";
+        reminderToUpdate.setText(text);
+
+        Reminder updatedReminder = this.reminderService
+                .update(reminderToUpdate);
+
+        assertThat(updatedReminder).isNull();
     }
 
 }

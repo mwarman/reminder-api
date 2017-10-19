@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ public class ReminderControllerTests {
 
         verify(reminderService, times(1)).create(any(Reminder.class));
 
-        assertThat(status).isEqualTo(200);
+        assertThat(status).isEqualTo(201);
         assertThat(content).isNotNull().isNotEmpty();
     }
 
@@ -114,6 +115,53 @@ public class ReminderControllerTests {
         int status = result.getResponse().getStatus();
 
         verify(reminderService, times(1)).findById(reminderId);
+
+        assertThat(status).isEqualTo(404);
+        assertThat(content).isEmpty();
+    }
+
+    @Test
+    public void updateReminder() throws Exception {
+        Long reminderId = new Long(1);
+        Reminder reminder = new Reminder("Test the Controller", new Date());
+        reminder.setId(reminderId);
+
+        when(this.reminderService.update(any(Reminder.class)))
+                .thenReturn(reminder);
+        MvcResult result = this.mvc
+                .perform(patch("/api/reminders/" + reminderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(reminder)))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).update(any(Reminder.class));
+
+        assertThat(status).isEqualTo(200);
+        assertThat(content).isNotNull().isNotEmpty();
+    }
+
+    @Test
+    public void updateReminderNotFound() throws Exception {
+        Long reminderId = Long.MAX_VALUE;
+        Reminder reminder = new Reminder("Test the Controller", new Date());
+        reminder.setId(reminderId);
+
+        when(this.reminderService.update(any(Reminder.class))).thenReturn(null);
+        MvcResult result = this.mvc
+                .perform(patch("/api/reminders/" + reminderId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(reminder)))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        int status = result.getResponse().getStatus();
+
+        verify(reminderService, times(1)).update(any(Reminder.class));
 
         assertThat(status).isEqualTo(404);
         assertThat(content).isEmpty();

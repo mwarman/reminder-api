@@ -6,20 +6,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Override
     @Bean
-    public UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("user").password("abcd1234#")
-                .roles("USER").build());
-        return manager;
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Override
@@ -33,6 +27,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             
             .antMatchers(HttpMethod.OPTIONS).permitAll()
+            .antMatchers(HttpMethod.POST, "/api/users").permitAll()
             .antMatchers(HttpMethod.GET, "/api").permitAll()
             .antMatchers("/api/**").authenticated()
 

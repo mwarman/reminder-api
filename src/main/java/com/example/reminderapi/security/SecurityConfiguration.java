@@ -22,6 +22,9 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+import com.example.reminderapi.service.UserService;
 
 @Configuration
 public class SecurityConfiguration {
@@ -114,6 +117,9 @@ public class SecurityConfiguration {
         @Autowired
         private JwtTokenStore tokenStore;
 
+        @Autowired
+        private UserService userService;
+
         @Override
         public void configure(ResourceServerSecurityConfigurer resources)
                 throws Exception {
@@ -141,6 +147,7 @@ public class SecurityConfiguration {
                 .and()
                 .csrf()
                     .disable()
+                .addFilterAfter(new RequestContextSecurityPersistenceFilter(userService), FilterSecurityInterceptor.class)
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
             

@@ -5,8 +5,12 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Reminder {
@@ -27,6 +31,15 @@ public class Reminder {
     private boolean complete = false;
 
     private Date completedAt;
+
+    @JsonIgnore
+    @ManyToOne(
+            optional = false)
+    @JoinColumn(
+            name = "userId",
+            nullable = false,
+            updatable = false)
+    private User user;
 
     public Reminder() {
 
@@ -79,6 +92,14 @@ public class Reminder {
 
     public void setCompletedAt(Date completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @PrePersist

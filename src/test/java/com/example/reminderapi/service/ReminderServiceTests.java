@@ -15,7 +15,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.reminderapi.model.Reminder;
+import com.example.reminderapi.model.User;
 import com.example.reminderapi.repository.ReminderRepository;
+import com.example.reminderapi.repository.UserRepository;
 
 @ActiveProfiles("ci")
 @RunWith(SpringRunner.class)
@@ -23,16 +25,21 @@ import com.example.reminderapi.repository.ReminderRepository;
 public class ReminderServiceTests {
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ReminderRepository reminderRepository;
 
     @Autowired
     private ReminderService reminderService;
 
+    private User userOne;
     private Reminder reminderOne;
     private Reminder reminderTwo;
 
     @Before
     public void beforeEach() {
+        userOne = userRepository.save(new User("tester@example.com"))
         reminderOne = reminderRepository
                 .save(new Reminder("Test One", new Date()));
 
